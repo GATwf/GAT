@@ -17,21 +17,17 @@ from jVMC.nets.initializers import init_fn_args
 class GAT(nn.Module):
     
     nbr_idx: HashableArray
+    sp: HashableArray
     F: Sequence[int] = (32, 32, 32, 32, 32, 32)
     num_heads: int = 8
     enlyr: int = 3
     use_bias: bool = True
     
     def nodeEncoder(self, s):
-        sp = jnp.zeros_like(s)
-        sp = sp.at[::2, ::2].set(1)
-        sp = sp.at[1::2, 1::2].set(1)
-        sp = jnp.ravel(sp)
-        sp = sp * 2 - 1
         
         s = jnp.ravel(s)
         s = s * 2 - 1
-        node_fea = jnp.stack((s, sp), axis=1)
+        node_fea = jnp.stack((s, self.sp), axis=1)
         return node_fea
     
     def setup(self):
